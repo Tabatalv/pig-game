@@ -8,7 +8,7 @@ document.querySelector('#app').innerHTML = `
         <p class="score" id="score--0">43</p>
         <div class="current">
           <p class="current-label">Current</p>
-          <p class="current-score" id="current--0">0</p>
+          <p class="current-score" id="current--0">4</p>
         </div>
       </section>
       <section class="player player--1">
@@ -16,7 +16,7 @@ document.querySelector('#app').innerHTML = `
         <p class="score" id="score--1">24</p>
         <div class="current">
           <p class="current-label">Current</p>
-          <p class="current-score" id="current--1">0</p>
+          <p class="current-score" id="current--1">5</p>
         </div>
       </section>
 
@@ -28,3 +28,129 @@ document.querySelector('#app').innerHTML = `
  
 
 `
+// score[jugadorActivo] += currentSCore
+// let jugadorActivo = [0, 1]
+// let randDice = 0
+
+//activePlayer
+let sectionPlayer0 = document.querySelector(".player--0")
+let sectionPlayer1 = document.querySelector(".player--1")
+
+//score = [0,0] -> variable de estado en JS
+const score0 = document.querySelector("#score--0")
+const score1 = document.querySelector("#score--1")
+
+//current -> variable de estado en JS
+let currentScore0 = document.querySelector("#current--0")
+let currentScore1 = document.querySelector("#current--1")
+
+
+const btnNew = document.querySelector(".btn--new")
+const btnRoll = document.querySelector(".btn--roll")
+const btnHold = document.querySelector(".btn--hold")
+
+let imgDice = document.querySelector(".dice")
+let diceNumber = 0
+let score, currentScore, activePlayer
+
+let totalScore = 0
+
+const initData = () => {
+  //init state variables
+  score = [0, 0]
+  currentScore = 0
+  activePlayer = 0
+  score0.textContent = 0
+  score1.textContent = 0
+  currentScore0.textContent = 0
+  currentScore1.textContent = 0
+  
+  imgDice.classList.add("hidden")
+
+
+
+}
+function switchPlayer(){
+  resetCurrentScore()
+ 
+    sectionPlayer1.classList.toggle("player--active")
+    sectionPlayer0.classList.toggle("player--active")
+    activePlayer = activePlayer === 0 ? 1: 0
+}
+
+function resetCurrentScore(){
+  currentScore = 0 //current = current + diceNumber
+
+  if(activePlayer === 0) currentScore0.textContent = currentScore
+  else currentScore1.textContent = currentScore
+}
+
+
+const throwDice = () => {
+  diceNumber = Math.floor(Math.random() * 6) + 1
+  imgDice.src = `dice-${diceNumber}.png`
+  imgDice.classList.remove("hidden")
+
+  if(diceNumber !== 1) updateCurrentScore(diceNumber)
+
+  else{
+    // activePlayer cambia de 0 a 1 y viceversa
+    //css cambiará
+    //current se tiene que resetear a 0
+    // activePlayer === 0 ? 1: 0
+    // currentScore = 0
+    switchPlayer()
+  }
+}
+
+function updateCurrentScore(diceNumber){
+  currentScore += diceNumber //current = current + diceNumber
+
+    if(activePlayer === 0) currentScore0.textContent = currentScore
+    else currentScore1.textContent = currentScore
+}
+
+function updateTotalScore (diceNumber){
+
+  if(activePlayer === 0){
+  
+    console.log(currentScore, diceNumber)
+    currentScore = Number(score0.textContent) + diceNumber
+
+    console.log(currentScore)
+    score0.textContent = currentScore 
+    
+    if(currentScore >= 20){
+      sectionPlayer0.classList.add("player--winner")
+      
+    }
+    else{
+      switchPlayer()
+      console.log("cambiado jugador")
+    }
+    
+
+
+  } 
+  else{
+    currentScore = Number(score1.textContent) + diceNumber
+    score1.textContent = currentScore
+    if(currentScore >= 20){
+      console.log("Ganaste")
+      
+    }
+    else{
+      switchPlayer()
+      console.log("cambiado jugador")
+    }
+
+  } 
+}
+function hold(){
+  updateTotalScore(diceNumber)
+}
+initData()
+btnNew.addEventListener("click", initData)
+btnRoll.addEventListener("click", throwDice)
+btnHold.addEventListener("click", hold)
+
