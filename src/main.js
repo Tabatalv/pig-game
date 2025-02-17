@@ -28,9 +28,6 @@ document.querySelector('#app').innerHTML = `
  
 
 `
-// score[jugadorActivo] += currentSCore
-// let jugadorActivo = [0, 1]
-// let randDice = 0
 
 //activePlayer
 let sectionPlayer0 = document.querySelector(".player--0")
@@ -50,13 +47,16 @@ const btnRoll = document.querySelector(".btn--roll")
 const btnHold = document.querySelector(".btn--hold")
 
 let imgDice = document.querySelector(".dice")
-let diceNumber = 0
 let score, currentScore, activePlayer
 
 let totalScore = 0
 
 const initData = () => {
-  //init state variables
+  //init state variables, declara todas las variables a 0 para empezar un juego nuevo, esconde la imagen, se muestra de nuevo el boton de tirar dado
+  //  ya que al ganar se oculta, se remueven los clases de jugador ganador que daban un estilo a la tarjeta de jugador para ambos
+  //y si se ha empezado un juego nuevo mientras la partida anterior quedo el jugador 2 activo, 
+  // se elimina la clase de jugador activo del jugador 2 y se le agrega al jugador 1
+
   score = [0, 0]
   currentScore = 0
   activePlayer = 0
@@ -66,6 +66,11 @@ const initData = () => {
   currentScore1.textContent = 0
   
   imgDice.classList.add("hidden")
+  btnRoll.style.display = "block"
+  sectionPlayer0.classList.remove("player--winner")
+  sectionPlayer1.classList.remove("player--winner")
+  sectionPlayer0.classList.add("player--active")
+  sectionPlayer1.classList.remove("player--active")
 
 
 
@@ -87,7 +92,7 @@ function resetCurrentScore(){
 
 
 const throwDice = () => {
-  diceNumber = Math.floor(Math.random() * 6) + 1
+  let diceNumber = Math.floor(Math.random() * 6) + 1
   imgDice.src = `dice-${diceNumber}.png`
   imgDice.classList.remove("hidden")
 
@@ -110,46 +115,53 @@ function updateCurrentScore(diceNumber){
     else currentScore1.textContent = currentScore
 }
 
-function updateTotalScore (diceNumber){
+function updateTotalScore (){
 
   if(activePlayer === 0){
-  
-    console.log(currentScore, diceNumber)
-    currentScore = Number(score0.textContent) + diceNumber
-
-    console.log(currentScore)
+    currentScore = Number(score0.textContent) + currentScore
     score0.textContent = currentScore 
     
     if(currentScore >= 20){
       sectionPlayer0.classList.add("player--winner")
+      btnRoll.style.display = "none"
       
     }
     else{
       switchPlayer()
-      console.log("cambiado jugador")
+   
     }
     
 
 
   } 
   else{
-    currentScore = Number(score1.textContent) + diceNumber
+    
+    currentScore = Number(score1.textContent) + currentScore
     score1.textContent = currentScore
+    
     if(currentScore >= 20){
-      console.log("Ganaste")
+      sectionPlayer1.classList.add("player--winner")
       
     }
     else{
       switchPlayer()
-      console.log("cambiado jugador")
+    
     }
 
   } 
 }
 function hold(){
-  updateTotalScore(diceNumber)
+
+  //verifica que jugador esta activo y segun eso al hacer hold suma lo que tenga acumulado el currentScore (al tirar el dado) 
+  // y el totalScore (el score que lleva el jugador) lo guarda en la variable currentScore y lo actualizara en el html, si es mayor a 20, gana,
+  //  y cambia el diseño de la tarjeta del jugador, y oculta el boton de tirar dado, de lo cntrario, cambiará de jugador
+
+  updateTotalScore()
 }
+
+
 initData()
+
 btnNew.addEventListener("click", initData)
 btnRoll.addEventListener("click", throwDice)
 btnHold.addEventListener("click", hold)
